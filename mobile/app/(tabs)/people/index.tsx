@@ -1,7 +1,7 @@
-import { Link, Stack } from "expo-router";
+import { Link, Stack, router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
-import type { Person } from "@crm/shared";
+import { normalizeTags, type Person } from "@crm/shared";
 import { Avatar } from "../../../components/Avatar";
 import { api } from "../../../lib/api";
 import { useAuth } from "../../../lib/auth";
@@ -9,15 +9,21 @@ import { formatWhen, tierLabel } from "../../../lib/format";
 
 export default function PeopleScreen() {
   const { me, logout } = useAuth();
+  const { tag: tagParam } = useLocalSearchParams<{ tag?: string }>();
+  const tag = normalizeTags([typeof tagParam === "string" ? tagParam : ""])[0] ?? "";
   const [people, setPeople] = useState<Person[] | null>(null);
   const [q, setQ] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const load = useCallback(async (query: string) => {
+  const load = useCallback(async (query: string, tagFilter: string) => {
     try {
       setError(null);
-      setPeople(await api<Person[]>(`/api/people?q=${encodeURIComponent(query)}`));
+      const params = new URLSearchParams();
+      if (query) params.set("q", query);
+      if (tagFilter) params.set("tag", tagFilter);
+      const qs = params.toString();
+      setPeople(await api<Person[]>(`/api/people${qs ? `?${qs}` : ""}`));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load people");
     }
@@ -25,10 +31,10 @@ export default function PeopleScreen() {
 
   useEffect(() => {
     const handle = setTimeout(() => {
-      void load(q);
+      void load(q, tag);
     }, 150);
     return () => clearTimeout(handle);
-  }, [q, load]);
+  }, [q, tag, load]);
 
   return (
     <View className="flex-1 bg-paper">
@@ -56,6 +62,14 @@ export default function PeopleScreen() {
         value={q}
         onChangeText={setQ}
       />
+      {tag ? (
+        <Pressable
+          className="mx-5 mt-3 self-start rounded-full bg-ink px-3 py-1"
+          onPress={() => router.replace("/people")}
+        >
+          <Text className="text-sm text-paper">{tag} ×</Text>
+        </Pressable>
+      ) : null}
       {me ? <Text className="mx-5 mt-2 text-xs text-ink-soft">{me.email}</Text> : null}
       {error ? <Text className="mx-5 mt-3 text-rose">{error}</Text> : null}
       <ScrollView
@@ -66,7 +80,7 @@ export default function PeopleScreen() {
             refreshing={refreshing}
             onRefresh={() => {
               setRefreshing(true);
-              void load(q).finally(() => setRefreshing(false));
+              void load(q, tag).finally(() => setRefreshing(false));
             }}
           />
         }
@@ -75,7 +89,9 @@ export default function PeopleScreen() {
           <Text className="text-ink-soft">Loading…</Text>
         ) : people.length === 0 ? (
           <View className="rounded-xl border border-dashed border-line p-8">
-            <Text className="text-center text-ink-soft">No people yet. Add someone you just met.</Text>
+            <Text className="text-center text-ink-soft">
+              {tag ? "No people with this tag." : "No people yet. Add someone you just met."}
+            </Text>
           </View>
         ) : (
           <View className="gap-2">

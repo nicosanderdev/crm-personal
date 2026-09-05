@@ -47,6 +47,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="dates"
+        options={{
+          title: "Dates",
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: "calendar", android: "calendar_month", web: "calendar_month" }}
+              tintColor={color}
+              size={26}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="people"
         options={{
           title: "People",

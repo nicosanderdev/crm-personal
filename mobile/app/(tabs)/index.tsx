@@ -4,7 +4,6 @@ import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native"
 import {
   SNOOZE_DAYS,
   SNOOZE_LABELS,
-  type BirthdayItem,
   type QueueItem,
   type Settings,
   type SnoozeDays,
@@ -15,7 +14,6 @@ import { channelLabel, formatWhen, tierLabel } from "../../lib/format";
 
 type QueueResponse = {
   due: QueueItem[];
-  birthdays: BirthdayItem[];
   tierDays: Settings["tierDays"];
 };
 
@@ -70,27 +68,6 @@ export default function QueueScreen() {
     >
       <Stack.Screen options={{ title: "Queue" }} />
       <Text className="text-ink-soft">Due when the last conversation is older than their cadence.</Text>
-
-      {data?.birthdays.length ? (
-        <View className="mt-5 rounded-xl border border-line bg-card p-4">
-          <Text className="text-xs font-sans-semibold uppercase tracking-wide text-ink-soft">
-            Birthdays this week
-          </Text>
-          <View className="mt-3 gap-2">
-            {data.birthdays.map((item) => (
-              <Link key={item.person.id} href={`/people/${item.person.id}`} asChild>
-                <Pressable className="flex-row items-center gap-2">
-                  <Avatar name={item.person.name} photoUrl={item.person.photoUrl} />
-                  <Text className="flex-1 text-ink">{item.person.name}</Text>
-                  <Text className="text-ink-soft">
-                    {item.daysUntil === 0 ? "today" : `in ${item.daysUntil}d`}
-                  </Text>
-                </Pressable>
-              </Link>
-            ))}
-          </View>
-        </View>
-      ) : null}
 
       {!data ? (
         <Text className="mt-8 text-ink-soft">Loading queue…</Text>

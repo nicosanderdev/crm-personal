@@ -39,3 +39,17 @@ _Avoid_: Archive, mute, delete, unsubscribe
 **Talking point**:
 The current thread to pick up next time you reach a Person. It lives on the Person, not on a past Interaction.
 _Avoid_: Follow-up, next action, agenda
+
+**Dates**:
+The upcoming timeline of Occasions and birthdays — a reason to reach someone because a day is coming, not because their cadence is due.
+_Avoid_: Calendar, agenda, events
+
+**Occasion**:
+A one-off date you created, optionally tagged so you can find People who share those tags.
+_Avoid_: Event, appointment, calendar entry
+
+**Birthday**:
+A Person's yearly date, shown on Dates for the next 90 days. Not an Occasion.
+
+**Tag**:
+A lowercase label on a Person or an Occasion. On an Occasion it joins to People who have the same tag.

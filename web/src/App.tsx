@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, RequireAuth } from "./auth.tsx";
 import { Layout } from "./components/Layout.tsx";
+import { DatesPage } from "./pages/DatesPage.tsx";
 import { ImportPage } from "./pages/ImportPage.tsx";
 import { LoginPage } from "./pages/LoginPage.tsx";
 import { PeoplePage } from "./pages/PeoplePage.tsx";
@@ -22,6 +23,7 @@ export default function App() {
             }
           >
             <Route path="/" element={<QueuePage />} />
+            <Route path="/dates" element={<DatesPage />} />
             <Route path="/people" element={<PeoplePage />} />
             <Route path="/people/new" element={<PersonFormPage />} />
             <Route path="/people/:id" element={<PersonDetailPage />} />

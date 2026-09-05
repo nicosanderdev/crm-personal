@@ -1,5 +1,5 @@
 import type { Channel, Person, PersonInput, SocialLink } from "@crm/shared";
-import { CHANNELS, SOCIAL_TYPES } from "@crm/shared";
+import { CHANNELS, SOCIAL_TYPES, normalizeTags } from "@crm/shared";
 import type { HydratedDocument } from "mongoose";
 import { z } from "zod";
 import type { PersonDoc } from "./models/person.ts";
@@ -39,7 +39,7 @@ export function toPersonInput(data: z.infer<typeof personInputSchema>): PersonIn
     organization: data.organization,
     role: data.role,
     howWeMet: data.howWeMet,
-    tags: data.tags,
+    tags: normalizeTags(data.tags),
     tier: data.tier,
     birthday: data.birthday,
     city: data.city,
@@ -63,7 +63,7 @@ export async function toPersonDto(
     organization: doc.organization ?? "",
     role: doc.role ?? "",
     howWeMet: doc.howWeMet ?? "",
-    tags: doc.tags ?? [],
+    tags: normalizeTags(doc.tags ?? []),
     tier: doc.tier,
     birthday: doc.birthday || null,
     city: doc.city ?? "",

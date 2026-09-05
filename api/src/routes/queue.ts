@@ -1,5 +1,5 @@
 import { Router } from "express";
-import type { BirthdayItem, QueueItem, Tier } from "@crm/shared";
+import type { QueueItem, Tier } from "@crm/shared";
 import { getTierDays } from "../models/settings.ts";
 import { PersonModel } from "../models/person.ts";
 import { toPersonDto } from "../serialize.ts";
@@ -16,14 +16,8 @@ queueRouter.get("/", async (_req, res, next) => {
     const people = await Promise.all(docs.map(toPersonDto));
 
     const due: QueueItem[] = [];
-    const birthdays: BirthdayItem[] = [];
 
     for (const person of people) {
-      const daysUntil = daysUntilBirthday(person.birthday, now);
-      if (daysUntil !== null && daysUntil <= 7) {
-        birthdays.push({ person, daysUntil });
-      }
-
       if (person.pausedAt) continue;
       if (person.snoozedUntil && new Date(person.snoozedUntil) > now) continue;
 
@@ -49,32 +43,9 @@ queueRouter.get("/", async (_req, res, next) => {
       if (bKey !== aKey) return bKey - aKey;
       return a.name.localeCompare(b.name);
     });
-    birthdays.sort((a, b) => a.daysUntil - b.daysUntil || a.person.name.localeCompare(b.person.name));
 
-    res.json({ due, birthdays, tierDays });
+    res.json({ due, tierDays });
   } catch (err) {
     next(err);
   }
 });
-
-function daysUntilBirthday(birthday: string | null, now: Date): number | null {
-  if (!birthday) return null;
-  const parts = birthday.split("-").map(Number);
-  const month = parts[1];
-  const day = parts[2];
-  if (!month || !day) return null;
-
-  const year = now.getFullYear();
-  let next = new Date(year, month - 1, day);
-  if (month === 2 && day === 29 && next.getMonth() !== 1) {
-    next = new Date(year, 1, 28);
-  }
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  if (next < today) {
-    next = new Date(year + 1, month - 1, day);
-    if (month === 2 && day === 29 && next.getMonth() !== 1) {
-      next = new Date(year + 1, 1, 28);
-    }
-  }
-  return Math.round((next.getTime() - today.getTime()) / MS_DAY);
-}

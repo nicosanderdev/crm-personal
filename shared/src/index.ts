@@ -112,6 +112,111 @@ export type PersonInput = {
   nextTalkingPoint: string;
 };
 
+export const YMD = /^\d{4}-\d{2}-\d{2}$/;
+export const BIRTHDAY_HORIZON_DAYS = 90;
+export const MAX_TAGS = 30;
+export const MAX_TAG_LENGTH = 50;
+
+export type Occasion = {
+  id: string;
+  title: string;
+  date: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OccasionInput = {
+  title: string;
+  date: string;
+  tags: string[];
+};
+
+export type DatesDay = {
+  date: string;
+  occasions: Occasion[];
+  birthdays: Person[];
+};
+
+export type DatesResponse = {
+  days: DatesDay[];
+};
+
+export function normalizeTags(tags: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of tags) {
+    const tag = raw.trim().toLowerCase();
+    if (!tag || tag.length > MAX_TAG_LENGTH || seen.has(tag)) continue;
+    seen.add(tag);
+    out.push(tag);
+    if (out.length >= MAX_TAGS) break;
+  }
+  return out;
+}
+
+export function parseYmd(value: string): { year: number; month: number; day: number } | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  return { year: Number(match[1]), month: Number(match[2]), day: Number(match[3]) };
+}
+
+export function formatYmd(year: number, month: number, day: number): string {
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+export function todayYmd(now = new Date()): string {
+  return formatYmd(now.getFullYear(), now.getMonth() + 1, now.getDate());
+}
+
+export function daysBetweenYmd(from: string, to: string): number | null {
+  const a = parseYmd(from);
+  const b = parseYmd(to);
+  if (!a || !b) return null;
+  const start = new Date(a.year, a.month - 1, a.day).getTime();
+  const end = new Date(b.year, b.month - 1, b.day).getTime();
+  return Math.round((end - start) / 86400000);
+}
+
+function birthdayOnYear(year: number, month: number, day: number): string {
+  const probe = new Date(year, month - 1, day);
+  if (month === 2 && day === 29 && probe.getMonth() !== 1) {
+    return formatYmd(year, 2, 28);
+  }
+  return formatYmd(year, month, day);
+}
+
+export function nextBirthdayOnOrAfter(birthday: string, today: string): string | null {
+  const born = parseYmd(birthday);
+  const current = parseYmd(today);
+  if (!born || !current) return null;
+  let next = birthdayOnYear(current.year, born.month, born.day);
+  if (next < today) {
+    next = birthdayOnYear(current.year + 1, born.month, born.day);
+  }
+  return next;
+}
+
+export function daysUntilBirthday(birthday: string | null, today: string): number | null {
+  if (!birthday) return null;
+  const next = nextBirthdayOnOrAfter(birthday, today);
+  if (!next) return null;
+  return daysBetweenYmd(today, next);
+}
+
+export function dayHeading(date: string, today: string): string {
+  const diff = daysBetweenYmd(today, date);
+  if (diff === 0) return "Today";
+  if (diff === 1) return "Tomorrow";
+  const parsed = parseYmd(date);
+  if (!parsed) return date;
+  return new Date(parsed.year, parsed.month - 1, parsed.day).toLocaleDateString(undefined, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+}
+
 export type Interaction = {
   id: string;
   personId: string;
@@ -130,11 +235,6 @@ export type InteractionInput = {
 export type QueueItem = Person & {
   daysOverdue: number | null;
   neverContacted: boolean;
-};
-
-export type BirthdayItem = {
-  person: Person;
-  daysUntil: number;
 };
 
 export type Settings = {

@@ -10,6 +10,7 @@ import {
   type SocialLink,
   type SocialType,
   type Tier,
+  normalizeTags,
 } from "@crm/shared";
 import { PersonModel } from "../models/person.ts";
 import { toPersonDto } from "../serialize.ts";
@@ -81,10 +82,12 @@ function rowToPerson(row: Record<string, string>): PersonInput {
     organization: (row.organization ?? "").trim(),
     role: (row.role ?? "").trim(),
     howWeMet: (row.howWeMet ?? "").trim(),
-    tags: (row.tags ?? "")
-      .split("|")
-      .map((t) => t.trim())
-      .filter(Boolean),
+    tags: normalizeTags(
+      (row.tags ?? "")
+        .split("|")
+        .map((t) => t.trim())
+        .filter(Boolean),
+    ),
     tier: tierNum as Tier,
     birthday,
     city: (row.city ?? "").trim(),

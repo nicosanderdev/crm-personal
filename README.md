@@ -1,6 +1,6 @@
 # Circle — personal CRM
 
-Private web app for one person: a circle of people, a log of conversations, and a queue of who is due a reach-out.
+Private web app for one person: a circle of people, a log of conversations, a queue of who is due a reach-out, and a Dates tab for upcoming occasions and birthdays.
 
 The domain language lives in [CONTEXT.md](./CONTEXT.md).
 

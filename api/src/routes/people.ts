@@ -1,7 +1,7 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
-import { SNOOZE_DAYS, type SnoozeDays } from "@crm/shared";
+import { SNOOZE_DAYS, type SnoozeDays, normalizeTags } from "@crm/shared";
 import { HttpError } from "../middleware.ts";
 import { InteractionModel } from "../models/interaction.ts";
 import { PersonModel } from "../models/person.ts";
@@ -13,16 +13,22 @@ export const peopleRouter = Router();
 peopleRouter.get("/", async (req, res, next) => {
   try {
     const q = String(req.query.q ?? "").trim();
-    const filter = q
-      ? {
-          $or: [
-            { name: { $regex: q, $options: "i" } },
-            { organization: { $regex: q, $options: "i" } },
-            { tags: { $regex: q, $options: "i" } },
-            { email: { $regex: q, $options: "i" } },
-          ],
-        }
-      : {};
+    const tag = normalizeTags([String(req.query.tag ?? "")])[0] ?? "";
+    const clauses: Record<string, unknown>[] = [];
+    if (tag) {
+      clauses.push({ tags: tag });
+    }
+    if (q) {
+      const search = [
+        { name: { $regex: q, $options: "i" } },
+        { organization: { $regex: q, $options: "i" } },
+        { email: { $regex: q, $options: "i" } },
+        ...(tag ? [] : [{ tags: { $regex: q, $options: "i" } }]),
+      ];
+      clauses.push({ $or: search });
+    }
+    const filter =
+      clauses.length === 0 ? {} : clauses.length === 1 ? clauses[0] : { $and: clauses };
     const docs = await PersonModel.find(filter).sort({ name: 1 });
     res.json(await Promise.all(docs.map(toPersonDto)));
   } catch (err) {

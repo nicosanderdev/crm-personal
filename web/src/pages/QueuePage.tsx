@@ -3,23 +3,23 @@ import { Link } from "react-router-dom";
 import {
   SNOOZE_DAYS,
   SNOOZE_LABELS,
-  type BirthdayItem,
   type QueueItem,
   type Settings,
   type SnoozeDays,
 } from "@crm/shared";
 import { api } from "../api.ts";
 import { Avatar } from "../components/Avatar.tsx";
+import { paginate, Paginator } from "../components/Paginator.tsx";
 import { channelLabel, formatWhen, tierLabel } from "../format.ts";
 
 type QueueResponse = {
   due: QueueItem[];
-  birthdays: BirthdayItem[];
   tierDays: Settings["tierDays"];
 };
 
 export function QueuePage() {
   const [data, setData] = useState<QueueResponse | null>(null);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
@@ -62,30 +62,6 @@ export function QueuePage() {
         </Link>
       </header>
 
-      {data.birthdays.length > 0 ? (
-        <section className="mb-8 rounded-xl border border-line bg-card p-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">
-            Birthdays this week
-          </h2>
-          <ul className="mt-3 flex flex-wrap gap-3">
-            {data.birthdays.map((item) => (
-              <li key={item.person.id}>
-                <Link
-                  to={`/people/${item.person.id}`}
-                  className="flex items-center gap-2 rounded-full border border-line bg-paper px-3 py-1.5 text-sm hover:border-accent"
-                >
-                  <Avatar name={item.person.name} photoUrl={item.person.photoUrl} />
-                  <span>{item.person.name}</span>
-                  <span className="text-ink-soft">
-                    {item.daysUntil === 0 ? "today" : `in ${item.daysUntil}d`}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
       {data.due.length === 0 ? (
         <div className="rounded-xl border border-dashed border-line p-12 text-center text-ink-soft">
           Nobody is due. Enjoy the quiet, or{" "}
@@ -95,69 +71,95 @@ export function QueuePage() {
           .
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-card">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="border-b border-line text-xs uppercase tracking-wide text-ink-soft">
-              <tr>
-                <th className="px-4 py-3 font-medium">Person</th>
-                <th className="px-4 py-3 font-medium">Due</th>
-                <th className="px-4 py-3 font-medium">Last conversation</th>
-                <th className="px-4 py-3 font-medium">Snooze</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.due.map((person) => (
-                <tr key={person.id} className="border-b border-line/70 last:border-0">
-                  <td className="px-4 py-3">
-                    <Link to={`/people/${person.id}`} className="flex items-center gap-3">
-                      <Avatar name={person.name} photoUrl={person.photoUrl} />
-                      <span>
-                        <span className="block font-medium">{person.name}</span>
-                        <span className="text-ink-soft">
-                          {person.organization || tierLabel(person.tier)}
-                        </span>
-                      </span>
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3">
-                    {person.neverContacted ? (
-                      <span className="text-rose">Never contacted</span>
-                    ) : (
-                      <span className="text-accent">
-                        {person.daysOverdue === 0
-                          ? "Due today"
-                          : `${person.daysOverdue}d overdue`}
-                      </span>
-                    )}
-                  </td>
-                  <td className="max-w-sm px-4 py-3">
-                    <p className="text-ink-soft">{formatWhen(person.lastInteractionAt)}</p>
-                    <p className="truncate">
-                      {person.lastInteractionPreview
-                        ? person.lastInteractionPreview
-                        : channelLabel(person.lastInteractionChannel)}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1">
-                      {SNOOZE_DAYS.map((days) => (
-                        <button
-                          key={days}
-                          type="button"
-                          className="rounded-md border border-line px-2 py-1 text-xs text-ink-soft hover:border-ink hover:text-ink"
-                          onClick={() => void snooze(person.id, days)}
-                        >
-                          {SNOOZE_LABELS[days]}
-                        </button>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DueTable due={data.due} page={page} onPageChange={setPage} onSnooze={snooze} />
       )}
+    </div>
+  );
+}
+
+function DueTable({
+  due,
+  page,
+  onPageChange,
+  onSnooze,
+}: {
+  due: QueueItem[];
+  page: number;
+  onPageChange: (page: number) => void;
+  onSnooze: (id: string, days: SnoozeDays) => Promise<void>;
+}) {
+  const { currentPage, totalPages, total, pageItems } = paginate(due, page);
+
+  return (
+    <div>
+      <div className="overflow-x-auto rounded-xl border border-line bg-card">
+        <table className="w-full min-w-[760px] text-left text-sm">
+          <thead className="border-b border-line text-xs uppercase tracking-wide text-ink-soft">
+            <tr>
+              <th className="px-4 py-3 font-medium">Person</th>
+              <th className="px-4 py-3 font-medium">Due</th>
+              <th className="px-4 py-3 font-medium">Last conversation</th>
+              <th className="px-4 py-3 font-medium">Snooze</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pageItems.map((person) => (
+              <tr key={person.id} className="border-b border-line/70 last:border-0">
+                <td className="px-4 py-3">
+                  <Link to={`/people/${person.id}`} className="flex items-center gap-3">
+                    <Avatar name={person.name} photoUrl={person.photoUrl} />
+                    <span>
+                      <span className="block font-medium">{person.name}</span>
+                      <span className="text-ink-soft">
+                        {person.organization || tierLabel(person.tier)}
+                      </span>
+                    </span>
+                  </Link>
+                </td>
+                <td className="px-4 py-3">
+                  {person.neverContacted ? (
+                    <span className="text-rose">Never contacted</span>
+                  ) : (
+                    <span className="text-accent">
+                      {person.daysOverdue === 0
+                        ? "Due today"
+                        : `${person.daysOverdue}d overdue`}
+                    </span>
+                  )}
+                </td>
+                <td className="max-w-sm px-4 py-3">
+                  <p className="text-ink-soft">{formatWhen(person.lastInteractionAt)}</p>
+                  <p className="truncate">
+                    {person.lastInteractionPreview
+                      ? person.lastInteractionPreview
+                      : channelLabel(person.lastInteractionChannel)}
+                  </p>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-wrap gap-1">
+                    {SNOOZE_DAYS.map((days) => (
+                      <button
+                        key={days}
+                        type="button"
+                        className="rounded-md border border-line px-2 py-1 text-xs text-ink-soft hover:border-ink hover:text-ink"
+                        onClick={() => void onSnooze(person.id, days)}
+                      >
+                        {SNOOZE_LABELS[days]}
+                      </button>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Paginator
+        page={currentPage}
+        totalPages={totalPages}
+        total={total}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 }
