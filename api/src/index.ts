@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { ZodError } from "zod";
 import { connectDb } from "./db.ts";
 import { env, isProd } from "./env.ts";
+import { injectBearerSessionCookie } from "./bearer-session.ts";
 import { errorHandler, requireAuth } from "./middleware.ts";
 import { getTierDays } from "./models/settings.ts";
 import { authRouter } from "./routes/auth.ts";
@@ -25,6 +26,7 @@ app.use(
 );
 app.use(express.json({ limit: "1mb" }));
 app.use(express.text({ type: ["text/csv", "text/plain"], limit: "2mb" }));
+app.use(injectBearerSessionCookie);
 
 app.use(
   session({

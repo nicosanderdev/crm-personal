@@ -7,11 +7,14 @@ The domain language lives in [CONTEXT.md](./CONTEXT.md).
 ## Stack
 
 - `web/` — Vite, React, TypeScript, Tailwind. Deployed on Vercel.
+- `mobile/` — Expo (Android), React Native, NativeWind. Expo Go while developing; EAS preview APK when you want an icon.
 - `api/` — Express, Mongoose, TypeScript. Deployed on Render.
 - MongoDB Atlas (or local Mongo via Docker).
 - Cloudflare R2 for photos (private bucket, signed URLs).
 
 The browser only talks to the Vercel origin. `/api/*` is rewritten to Render so session cookies stay first-party.
+
+The Android app talks to Render directly with `Authorization: Bearer` (same Mongo sessions as the web cookie).
 
 ## Local development
 
@@ -29,6 +32,16 @@ npm run dev
 
 App: http://localhost:5173  
 API: http://localhost:3001/api/health
+
+### Android app
+
+The phone uses production Render by default (`https://crm-personal-api.onrender.com`). Copy `mobile/.env.example` to `mobile/.env` if you want a local API (emulator: `http://10.0.2.2:3001`).
+
+```bash
+npm run dev:mobile
+```
+
+Scan the QR code with Expo Go on Android. For a standalone APK: `cd mobile && npx eas build --profile preview --platform android`.
 
 Photos need R2 credentials in `api/.env`. Leave them empty until you add a bucket; everything else still runs.
 

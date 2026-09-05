@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Request } from "express";
 import bcrypt from "bcryptjs";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
@@ -20,21 +20,53 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+async function authenticate(emailRaw: string, password: string) {
+  const email = emailRaw.toLowerCase();
+  if (allowedEmail && email !== allowedEmail) {
+    return null;
+  }
+  const user = await User.findOne({ email });
+  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    return null;
+  }
+  return user;
+}
+
+function saveSession(req: Request): Promise<void> {
+  return new Promise((resolve, reject) => {
+    req.session.save((err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 authRouter.post("/login", loginLimiter, async (req, res, next) => {
   try {
     const body = loginSchema.parse(req.body);
-    const email = body.email.toLowerCase();
-    if (allowedEmail && email !== allowedEmail) {
-      res.status(401).json({ error: "Invalid email or password" });
-      return;
-    }
-    const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(body.password, user.passwordHash))) {
+    const user = await authenticate(body.email, body.password);
+    if (!user) {
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
     req.session.userId = String(user._id);
     res.json({ email: user.email });
+  } catch (err) {
+    next(err);
+  }
+});
+
+authRouter.post("/token", loginLimiter, async (req, res, next) => {
+  try {
+    const body = loginSchema.parse(req.body);
+    const user = await authenticate(body.email, body.password);
+    if (!user) {
+      res.status(401).json({ error: "Invalid email or password" });
+      return;
+    }
+    req.session.userId = String(user._id);
+    await saveSession(req);
+    res.json({ email: user.email, token: req.sessionID });
   } catch (err) {
     next(err);
   }
