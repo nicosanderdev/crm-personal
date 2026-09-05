@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: crm-personal-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"
