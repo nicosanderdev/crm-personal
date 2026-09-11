@@ -95,8 +95,12 @@ Set:
 - `NODE_ENV=production`
 - `MONGODB_URI`
 - `SESSION_SECRET` (long random string)
-- `ALLOWED_EMAIL`
+- `ALLOWED_EMAIL` (the only address that can sign in)
+- `BOOTSTRAP_EMAIL` (same as `ALLOWED_EMAIL`)
+- `BOOTSTRAP_PASSWORD` (used once: if Mongo has no user, the API creates it on start)
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_ENDPOINT`
+
+Free Render has no shell and no pre-deploy command. The API creates the first user during `start` when the database is empty. After that, changing `BOOTSTRAP_PASSWORD` does nothing.
 
 Render injects `PORT`. Do not override it.
 
@@ -117,7 +121,9 @@ After Render is live, confirm `vercel.json` rewrites `/api/:path*` to that URL.
 
 ### First login
 
-Run `create-user` against Atlas (same `MONGODB_URI` as Render), then sign in on the Vercel URL.
+On Render, set `ALLOWED_EMAIL`, `BOOTSTRAP_EMAIL`, and `BOOTSTRAP_PASSWORD`, then deploy. The API writes that user on start if none exists.
+
+To change email or password later, run `create-user` locally against Atlas (same `MONGODB_URI` as Render). That command upserts the hash; it does not require a Render shell. You can also edit the `users` collection in Atlas, but the password field must be a bcrypt hash, not the plain password.
 
 ## CSV import
 
