@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://crm-personal-api.onrender.com/api/:path*"
+      "destination": "https://crm-personal-a0x5.onrender.com/api/:path*"
     },
     {
       "source": "/((?!api/).*)",
