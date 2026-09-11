@@ -4,12 +4,13 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
+const outDir = fileURLToPath(new URL("../dist", import.meta.url));
 
 export default defineConfig({
   root,
   plugins: [react(), tailwindcss()],
   build: {
-    outDir: "dist",
+    outDir,
     emptyOutDir: true,
   },
   resolve: {
