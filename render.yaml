@@ -10,3 +10,9 @@ services:
         value: production
       - key: NODE_VERSION
         value: "20"
+      - key: ALLOWED_EMAIL
+        value: nicolas.sander.dev@gmail.com
+      - key: BOOTSTRAP_EMAIL
+        value: nicolas.sander.dev@gmail.com
+      - key: BOOTSTRAP_PASSWORD
+        sync: false

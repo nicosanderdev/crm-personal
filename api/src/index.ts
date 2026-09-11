@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { ZodError } from "zod";
 import { connectDb } from "./db.ts";
 import { env, isProd } from "./env.ts";
+import { ensureFirstUser } from "./ensure-first-user.ts";
 import { injectBearerSessionCookie } from "./bearer-session.ts";
 import { errorHandler, requireAuth } from "./middleware.ts";
 import { getTierDays } from "./models/settings.ts";
@@ -18,6 +19,7 @@ import { peopleRouter } from "./routes/people.ts";
 import { queueRouter } from "./routes/queue.ts";
 
 await connectDb();
+await ensureFirstUser();
 await getTierDays();
 await normalizeStoredPersonTags();
 
