@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
+import { allowedEmail } from "../env.ts";
 import { connectDb, disconnectDb } from "../db.ts";
 import { User } from "../models/user.ts";
-import "../env.ts";
 
 const email = process.argv[2]?.trim().toLowerCase();
 const password = process.argv[3];
@@ -29,4 +29,9 @@ await User.findOneAndUpdate(
   { upsert: true, new: true },
 );
 console.log(`User written: ${email}`);
+if (allowedEmail && allowedEmail !== email) {
+  console.warn(
+    `ALLOWED_EMAIL is ${allowedEmail}, so this account cannot log in. Set ALLOWED_EMAIL=${email} in api/.env and restart the API.`,
+  );
+}
 await disconnectDb();
