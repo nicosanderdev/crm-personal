@@ -104,7 +104,12 @@ Name the service `crm-personal-api` so it matches [vercel.json](./vercel.json), 
 
 ### Vercel (web)
 
-Import the repo. Root directory stays the repo root (`vercel.json` builds `web/`).
+Import the repo. In Project Settings → General → Build & Development Settings:
+
+- **Root Directory** — leave empty (the repo root). Do not set it to `web`.
+- **Build Command**, **Output Directory**, **Install Command** — turn **Override** off so `vercel.json` wins (`outputDirectory` is `dist`).
+
+If Override stays on for Output Directory, set it to `dist` (not `web/dist`). Vite writes the static app to the repo-root `dist/` folder.
 
 Enable **Deployment Protection** so preview URLs are not a second copy of the CRM.
 
