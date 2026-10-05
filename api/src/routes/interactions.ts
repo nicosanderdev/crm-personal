@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { CHANNELS, type Channel, type Interaction } from "@crm/shared";
+import { CHANNELS } from "@crm/shared";
 import { z } from "zod";
+import { refreshLastContact } from "../last-contact.ts";
 import { InteractionModel } from "../models/interaction.ts";
+import { timelineForPerson } from "../timeline.ts";
 import { findPerson, personIdParam } from "./people.ts";
 import { iso, parseDay } from "../serialize.ts";
 
@@ -16,19 +18,7 @@ const interactionSchema = z.object({
 interactionsRouter.get("/", async (req, res, next) => {
   try {
     const person = await findPerson(personIdParam(req));
-    const docs = await InteractionModel.find({ personId: person._id }).sort({ date: -1 });
-    res.json(
-      docs.map(
-        (d): Interaction => ({
-          id: String(d._id),
-          personId: String(d.personId),
-          date: d.date.toISOString(),
-          channel: d.channel as Channel,
-          notes: d.notes,
-          createdAt: iso(d.get("createdAt") as Date),
-        }),
-      ),
-    );
+    res.json(await timelineForPerson(person._id));
   } catch (err) {
     next(err);
   }
@@ -49,12 +39,7 @@ interactionsRouter.post("/", async (req, res, next) => {
       channel: body.channel,
       notes: body.notes,
     });
-    const preview = body.notes.trim().slice(0, 180) || body.channel;
-    person.lastInteractionAt = date;
-    person.lastInteractionPreview = preview;
-    person.lastInteractionChannel = body.channel;
-    person.snoozedUntil = null;
-    await person.save();
+    await refreshLastContact([String(person._id)], { clearSnoozeWhen: () => true });
     res.status(201).json({
       id: String(doc._id),
       personId: String(doc.personId),

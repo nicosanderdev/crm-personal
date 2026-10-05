@@ -74,6 +74,20 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="groups"
+        options={{
+          title: "Groups",
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: "person.3", android: "group", web: "group" }}
+              tintColor={color}
+              size={26}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

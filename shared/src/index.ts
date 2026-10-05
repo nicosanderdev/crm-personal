@@ -232,6 +232,64 @@ export type InteractionInput = {
   notes: string;
 };
 
+export type TimelineEntry = {
+  id: string;
+  kind: "personal" | "group";
+  date: string;
+  channel: Channel;
+  notes: string;
+  createdAt: string;
+  groupId: string | null;
+  groupName: string | null;
+  countsAsContact: boolean | null;
+};
+
+export type GroupMember = {
+  id: string;
+  name: string;
+};
+
+export type GroupSummary = {
+  id: string;
+  name: string;
+  memberCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GroupLog = {
+  id: string;
+  date: string;
+  channel: Channel;
+  notes: string;
+  countsAsContact: boolean;
+  audience: GroupMember[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GroupDetail = {
+  id: string;
+  name: string;
+  members: GroupMember[];
+  logs: GroupLog[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GroupInput = {
+  name: string;
+  memberIds: string[];
+};
+
+export type GroupLogInput = {
+  date: string;
+  channel: Channel;
+  notes: string;
+  countsAsContact: boolean;
+  audienceIds: string[];
+};
+
 export type QueueItem = Person & {
   daysOverdue: number | null;
   neverContacted: boolean;

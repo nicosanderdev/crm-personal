@@ -5,6 +5,7 @@ const links = [
   { to: "/", label: "Queue", end: true },
   { to: "/dates", label: "Dates", end: true },
   { to: "/people", label: "People", end: false },
+  { to: "/groups", label: "Groups", end: false },
   { to: "/import", label: "Import", end: true },
 ];
 

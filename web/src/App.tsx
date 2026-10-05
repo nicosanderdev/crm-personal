@@ -2,6 +2,9 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, RequireAuth } from "./auth.tsx";
 import { Layout } from "./components/Layout.tsx";
 import { DatesPage } from "./pages/DatesPage.tsx";
+import { GroupDetailPage } from "./pages/GroupDetailPage.tsx";
+import { GroupNewPage } from "./pages/GroupNewPage.tsx";
+import { GroupsPage } from "./pages/GroupsPage.tsx";
 import { ImportPage } from "./pages/ImportPage.tsx";
 import { LoginPage } from "./pages/LoginPage.tsx";
 import { PeoplePage } from "./pages/PeoplePage.tsx";
@@ -28,6 +31,9 @@ export default function App() {
             <Route path="/people/new" element={<PersonFormPage />} />
             <Route path="/people/:id" element={<PersonDetailPage />} />
             <Route path="/people/:id/edit" element={<PersonFormPage />} />
+            <Route path="/groups" element={<GroupsPage />} />
+            <Route path="/groups/new" element={<GroupNewPage />} />
+            <Route path="/groups/:id" element={<GroupDetailPage />} />
             <Route path="/import" element={<ImportPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

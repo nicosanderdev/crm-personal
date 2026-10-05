@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import type { Me } from "@crm/shared";
 import { ApiError, api } from "./api.ts";
+import { LoadingSpinner } from "./components/LoadingSpinner.tsx";
 
 type AuthValue = {
   me: Me | null;
@@ -62,11 +63,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const { me, loading } = useAuth();
   const location = useLocation();
   if (loading) {
-    return createElement(
-      "div",
-      { className: "grid min-h-screen place-items-center text-ink-soft" },
-      "Loading…",
-    );
+    return createElement(LoadingSpinner, { fullscreen: true });
   }
   if (!me) {
     return createElement(Navigate, { to: "/login", replace: true, state: { from: location } });

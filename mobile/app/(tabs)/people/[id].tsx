@@ -1,4 +1,4 @@
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Link, router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -15,11 +15,13 @@ import {
   CHANNEL_LABELS,
   type Channel,
   type Person,
+  type TimelineEntry,
 } from "@crm/shared";
 import { Avatar } from "../../../components/Avatar";
 import { api } from "../../../lib/api";
 import {
   channelLabel,
+  formatDay,
   formatWhen,
   phoneHref,
   tierLabel,
@@ -29,6 +31,7 @@ import {
 export default function PersonDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [person, setPerson] = useState<Person | null>(null);
+  const [entries, setEntries] = useState<TimelineEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [channel, setChannel] = useState<Channel>("call");
   const [notes, setNotes] = useState("");
@@ -37,8 +40,12 @@ export default function PersonDetailScreen() {
 
   const load = useCallback(async () => {
     if (!id) return;
-    const next = await api<Person>(`/api/people/${id}`);
+    const [next, history] = await Promise.all([
+      api<Person>(`/api/people/${id}`),
+      api<TimelineEntry[]>(`/api/people/${id}/interactions`),
+    ]);
     setPerson(next);
+    setEntries(history);
     setChannel(next.preferredChannel ?? "call");
   }, [id]);
 
@@ -137,6 +144,36 @@ export default function PersonDetailScreen() {
               : channelLabel(person.lastInteractionChannel)}
           </Text>
         </View>
+
+        <Text className="mt-8 font-serif text-xl text-ink">History</Text>
+        {entries === null ? (
+          <Text className="mt-3 text-ink-soft">Loading…</Text>
+        ) : entries.length === 0 ? (
+          <Text className="mt-3 text-ink-soft">No conversations logged yet.</Text>
+        ) : (
+          <View className="mt-3 gap-3">
+            {entries.map((entry) => (
+              <View key={`${entry.kind}-${entry.id}`} className="rounded-xl border border-line bg-card p-4">
+                <Text className="text-sm text-ink-soft">
+                  {formatDay(entry.date)} · {CHANNEL_LABELS[entry.channel]}
+                  {entry.kind === "group" && entry.countsAsContact === false ? " · Timeline only" : ""}
+                </Text>
+                {entry.kind === "group" && entry.groupName ? (
+                  entry.groupId ? (
+                    <Link href={`/groups/${entry.groupId}`} asChild>
+                      <Pressable className="mt-1 self-start">
+                        <Text className="text-ink underline">{entry.groupName}</Text>
+                      </Pressable>
+                    </Link>
+                  ) : (
+                    <Text className="mt-1 text-ink">{entry.groupName}</Text>
+                  )
+                ) : null}
+                <Text className="mt-1 text-ink">{entry.notes || "—"}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         <Text className="mt-8 font-serif text-xl text-ink">Log interaction</Text>
         <Text className="mt-3 text-sm text-ink">Date</Text>
