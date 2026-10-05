@@ -98,6 +98,7 @@ function DueTable({
           <thead className="border-b border-line text-xs uppercase tracking-wide text-ink-soft">
             <tr>
               <th className="px-4 py-3 font-medium">Person</th>
+              <th className="px-4 py-3 font-medium">Tier</th>
               <th className="px-4 py-3 font-medium">Due</th>
               <th className="px-4 py-3 font-medium">Last conversation</th>
               <th className="px-4 py-3 font-medium">Snooze</th>
@@ -111,12 +112,13 @@ function DueTable({
                     <Avatar name={person.name} photoUrl={person.photoUrl} />
                     <span>
                       <span className="block font-medium">{person.name}</span>
-                      <span className="text-ink-soft">
-                        {person.organization || tierLabel(person.tier)}
-                      </span>
+                      {person.organization ? (
+                        <span className="text-ink-soft">{person.organization}</span>
+                      ) : null}
                     </span>
                   </Link>
                 </td>
+                <td className="px-4 py-3">{tierLabel(person.tier)}</td>
                 <td className="px-4 py-3">
                   {person.neverContacted ? (
                     <span className="text-rose">Never contacted</span>
