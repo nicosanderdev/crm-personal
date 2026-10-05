@@ -12,6 +12,7 @@ import { getTierDays } from "./models/settings.ts";
 import { authRouter } from "./routes/auth.ts";
 import { normalizeStoredPersonTags } from "./normalize-stored-tags.ts";
 import { datesRouter } from "./routes/dates.ts";
+import { groupsRouter } from "./routes/groups.ts";
 import { importRouter } from "./routes/import.ts";
 import { interactionsRouter } from "./routes/interactions.ts";
 import { occasionsRouter } from "./routes/occasions.ts";
@@ -57,6 +58,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/people", requireAuth, peopleRouter);
+app.use("/api/groups", requireAuth, groupsRouter);
 app.use("/api/people/:id/interactions", requireAuth, interactionsRouter);
 app.use("/api/queue", requireAuth, queueRouter);
 app.use("/api/import", requireAuth, importRouter);

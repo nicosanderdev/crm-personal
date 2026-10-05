@@ -4,8 +4,8 @@ import {
   CHANNELS,
   CHANNEL_LABELS,
   type Channel,
-  type Interaction,
   type Person,
+  type TimelineEntry,
 } from "@crm/shared";
 import { api } from "../api.ts";
 import { Avatar } from "../components/Avatar.tsx";
@@ -15,7 +15,7 @@ export function PersonDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [person, setPerson] = useState<Person | null>(null);
-  const [interactions, setInteractions] = useState<Interaction[]>([]);
+  const [interactions, setInteractions] = useState<TimelineEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [channel, setChannel] = useState<Channel>("message");
   const [notes, setNotes] = useState("");
@@ -26,7 +26,7 @@ export function PersonDetailPage() {
     if (!id) return;
     const [nextPerson, nextInteractions] = await Promise.all([
       api<Person>(`/api/people/${id}`),
-      api<Interaction[]>(`/api/people/${id}/interactions`),
+      api<TimelineEntry[]>(`/api/people/${id}/interactions`),
     ]);
     setPerson(nextPerson);
     setInteractions(nextInteractions);
@@ -67,7 +67,13 @@ export function PersonDetailPage() {
 
   async function remove() {
     if (!person) return;
-    if (!window.confirm(`Delete ${person.name}? This also deletes their history.`)) return;
+    if (
+      !window.confirm(
+        `Delete ${person.name}? Their personal history is removed. Group logs stay for everyone else who was included.`,
+      )
+    ) {
+      return;
+    }
     await api(`/api/people/${person.id}`, { method: "DELETE" });
     navigate("/people");
   }
@@ -155,9 +161,25 @@ export function PersonDetailPage() {
             ) : (
               <ol className="mt-4 space-y-4">
                 {interactions.map((item) => (
-                  <li key={item.id} className="rounded-xl border border-line bg-card p-4">
+                  <li key={`${item.kind}-${item.id}`} className="rounded-xl border border-line bg-card p-4">
                     <p className="text-sm text-ink-soft">
                       {formatDay(item.date)} · {CHANNEL_LABELS[item.channel]}
+                      {item.kind === "group" && item.groupName ? (
+                        <>
+                          {" · "}
+                          {item.groupId ? (
+                            <Link
+                              to={`/groups/${item.groupId}`}
+                              className="text-ink underline-offset-2 hover:underline"
+                            >
+                              {item.groupName}
+                            </Link>
+                          ) : (
+                            <span className="text-ink">{item.groupName}</span>
+                          )}
+                        </>
+                      ) : null}
+                      {item.kind === "group" && item.countsAsContact === false ? " · Timeline only" : null}
                     </p>
                     <p className="mt-1 whitespace-pre-wrap">{item.notes || "—"}</p>
                   </li>
