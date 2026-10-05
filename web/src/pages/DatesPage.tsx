@@ -7,6 +7,7 @@ import {
   type Occasion,
 } from "@crm/shared";
 import { api } from "../api.ts";
+import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 import { OccasionFormModal } from "../components/OccasionFormModal.tsx";
 
 export function DatesPage() {
@@ -62,7 +63,7 @@ export function DatesPage() {
       {error ? <p className="mb-4 text-rose">{error}</p> : null}
 
       {!data ? (
-        <p className="text-ink-soft">Loading…</p>
+        <LoadingSpinner />
       ) : empty ? (
         <div className="rounded-xl border border-dashed border-line p-12 text-center text-ink-soft">
           Nothing coming up. Add an occasion, or set a birthday on someone.

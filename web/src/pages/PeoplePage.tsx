@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { normalizeTags, type Person } from "@crm/shared";
 import { api } from "../api.ts";
 import { Avatar } from "../components/Avatar.tsx";
+import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 import { paginate, Paginator } from "../components/Paginator.tsx";
 import { formatWhen, tierLabel } from "../format.ts";
 
@@ -71,7 +72,7 @@ export function PeoplePage() {
         onChange={(e) => setQ(e.target.value)}
       />
       {!people ? (
-        <p className="text-ink-soft">Loading…</p>
+        <LoadingSpinner />
       ) : people.length === 0 ? (
         <div className="rounded-xl border border-dashed border-line p-12 text-center text-ink-soft">
           {tag

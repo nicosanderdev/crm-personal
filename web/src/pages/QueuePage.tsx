@@ -9,6 +9,7 @@ import {
 } from "@crm/shared";
 import { api } from "../api.ts";
 import { Avatar } from "../components/Avatar.tsx";
+import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
 import { paginate, Paginator } from "../components/Paginator.tsx";
 import { channelLabel, formatWhen, tierLabel } from "../format.ts";
 
@@ -43,7 +44,7 @@ export function QueuePage() {
   }
 
   if (error) return <p className="text-rose">{error}</p>;
-  if (!data) return <p className="text-ink-soft">Loading queue…</p>;
+  if (!data) return <LoadingSpinner label="Loading queue…" />;
 
   return (
     <div>
