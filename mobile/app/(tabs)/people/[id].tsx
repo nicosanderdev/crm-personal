@@ -18,6 +18,7 @@ import {
   type TimelineEntry,
 } from "@crm/shared";
 import { Avatar } from "../../../components/Avatar";
+import { TaskHome } from "../../../components/TaskHome";
 import { api } from "../../../lib/api";
 import {
   channelLabel,
@@ -132,6 +133,8 @@ export default function PersonDetailScreen() {
             {person.nextTalkingPoint || "Nothing queued for next time."}
           </Text>
         </View>
+
+        {typeof id === "string" ? <TaskHome variant="section" personId={id} /> : null}
 
         <View className="mt-3 rounded-xl border border-line bg-card p-4">
           <Text className="text-xs font-sans-semibold uppercase tracking-wide text-ink-soft">

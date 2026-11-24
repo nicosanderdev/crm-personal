@@ -5,6 +5,7 @@ import { SNOOZE_DAYS, type SnoozeDays, normalizeTags } from "@crm/shared";
 import { HttpError } from "../middleware.ts";
 import { detachPersonFromGroups } from "../group-membership.ts";
 import { InteractionModel } from "../models/interaction.ts";
+import { TaskModel } from "../models/task.ts";
 import { PersonModel } from "../models/person.ts";
 import { presignUpload } from "../r2.ts";
 import { personInputSchema, toPersonDto, toPersonInput } from "../serialize.ts";
@@ -73,6 +74,7 @@ peopleRouter.delete("/:id", async (req, res, next) => {
     const doc = await findPerson(req.params.id);
     await detachPersonFromGroups(String(doc._id));
     await InteractionModel.deleteMany({ personId: doc._id });
+    await TaskModel.deleteMany({ personId: doc._id });
     await doc.deleteOne();
     res.status(204).end();
   } catch (err) {

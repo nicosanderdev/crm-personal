@@ -20,6 +20,7 @@ import {
   type Person,
 } from "@crm/shared";
 import { api } from "../../../lib/api";
+import { TaskHome } from "../../../components/TaskHome";
 import { formatDay, todayInput } from "../../../lib/format";
 
 export default function GroupDetailScreen() {
@@ -136,7 +137,7 @@ export default function GroupDetailScreen() {
     if (!group) return;
     Alert.alert(
       "Delete group",
-      `Past logs for ${group.name} stay on people's timelines and can no longer be changed.`,
+      `Tasks for ${group.name} are removed. Past logs stay on people's timelines and can no longer be changed.`,
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -321,6 +322,8 @@ export default function GroupDetailScreen() {
             </Pressable>
           ))}
         </View>
+
+        {typeof id === "string" ? <TaskHome variant="section" groupId={id} /> : null}
 
         <Text className="mt-8 font-serif text-xl text-ink">Logs</Text>
         {group.logs.length === 0 ? (

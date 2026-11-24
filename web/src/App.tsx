@@ -11,6 +11,8 @@ import { PeoplePage } from "./pages/PeoplePage.tsx";
 import { PersonDetailPage } from "./pages/PersonDetailPage.tsx";
 import { PersonFormPage } from "./pages/PersonFormPage.tsx";
 import { QueuePage } from "./pages/QueuePage.tsx";
+import { TaskFormPage } from "./pages/TaskFormPage.tsx";
+import { TasksPage } from "./pages/TasksPage.tsx";
 
 export default function App() {
   return (
@@ -27,6 +29,9 @@ export default function App() {
           >
             <Route path="/" element={<QueuePage />} />
             <Route path="/dates" element={<DatesPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/tasks/new" element={<TaskFormPage />} />
+            <Route path="/tasks/:id" element={<TaskFormPage />} />
             <Route path="/people" element={<PeoplePage />} />
             <Route path="/people/new" element={<PersonFormPage />} />
             <Route path="/people/:id" element={<PersonDetailPage />} />

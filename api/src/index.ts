@@ -18,6 +18,7 @@ import { interactionsRouter } from "./routes/interactions.ts";
 import { occasionsRouter } from "./routes/occasions.ts";
 import { peopleRouter } from "./routes/people.ts";
 import { queueRouter } from "./routes/queue.ts";
+import { tasksRouter } from "./routes/tasks.ts";
 
 await connectDb();
 await ensureFirstUser();
@@ -64,6 +65,7 @@ app.use("/api/queue", requireAuth, queueRouter);
 app.use("/api/import", requireAuth, importRouter);
 app.use("/api/occasions", requireAuth, occasionsRouter);
 app.use("/api/dates", requireAuth, datesRouter);
+app.use("/api/tasks", requireAuth, tasksRouter);
 
 app.use((err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err instanceof ZodError) {
