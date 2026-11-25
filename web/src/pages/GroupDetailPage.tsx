@@ -10,6 +10,7 @@ import {
   type Person,
 } from "@crm/shared";
 import { api } from "../api.ts";
+import { TaskHome } from "../components/TaskHome.tsx";
 import { formatDay, todayInput } from "../format.ts";
 
 export function GroupDetailPage() {
@@ -131,7 +132,7 @@ export function GroupDetailPage() {
     if (!group) return;
     if (
       !window.confirm(
-        `Delete ${group.name}? Past logs stay on people's timelines and can no longer be changed.`,
+        `Delete ${group.name}? Its tasks are removed. Past logs stay on people's timelines and can no longer be changed.`,
       )
     ) {
       return;
@@ -298,6 +299,8 @@ export function GroupDetailPage() {
               </button>
             </div>
           </div>
+
+          <TaskHome variant="section" groupId={group.id} />
 
           <div>
             <h2 className="font-serif text-2xl">Logs</h2>

@@ -9,6 +9,7 @@ import {
 } from "@crm/shared";
 import { api } from "../api.ts";
 import { Avatar } from "../components/Avatar.tsx";
+import { TaskHome } from "../components/TaskHome.tsx";
 import { channelLabel, formatDay, formatWhen, tierLabel, todayInput } from "../format.ts";
 
 export function PersonDetailPage() {
@@ -69,7 +70,7 @@ export function PersonDetailPage() {
     if (!person) return;
     if (
       !window.confirm(
-        `Delete ${person.name}? Their personal history is removed. Group logs stay for everyone else who was included.`,
+        `Delete ${person.name}? Their tasks and personal history are removed. Group logs stay for everyone else who was included.`,
       )
     ) {
       return;
@@ -134,6 +135,7 @@ export function PersonDetailPage() {
               <p className="mt-2">{person.nextTalkingPoint}</p>
             </div>
           ) : null}
+          <TaskHome variant="section" personId={person.id} />
           <dl className="grid gap-4 rounded-xl border border-line bg-card p-5 sm:grid-cols-2">
             <Item label="How you met" value={person.howWeMet} />
             <Item label="City" value={[person.city, person.timezone].filter(Boolean).join(" · ")} />

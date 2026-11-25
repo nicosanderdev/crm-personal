@@ -324,6 +324,168 @@ export const CSV_TEMPLATE = `${CSV_COLUMNS.join(",")}
 Ana Pérez,Acme,Designer,Met at a dinner,climbing|design,2,1990-04-12,Buenos Aires,America/Argentina/Buenos_Aires,message,+5491100000000,ana@example.com,instagram:@ana;linkedin:https://linkedin.com/in/ana,Ask about the mural project
 `;
 
+export const TASK_STATUSES = ["pending", "completed", "cancelled"] as const;
+export type TaskStatus = (typeof TASK_STATUSES)[number];
+
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  pending: "Pending",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
+
+export type TaskSubjectRef =
+  | { kind: "loose" }
+  | { kind: "person"; id: string }
+  | { kind: "group"; id: string };
+
+export type TaskSubject =
+  | { kind: "loose" }
+  | { kind: "person"; id: string; name: string }
+  | { kind: "group"; id: string; name: string };
+
+export type Task = {
+  id: string;
+  name: string;
+  description: string;
+  status: TaskStatus;
+  dueDate: string | null;
+  subject: TaskSubject;
+  createdAt: string;
+  statusChangedAt: string;
+  updatedAt: string;
+};
+
+export type TaskInput = {
+  name: string;
+  description: string;
+  dueDate: string | null;
+  subject: TaskSubjectRef;
+  status: TaskStatus;
+};
+
+export type TaskCreateInput = Omit<TaskInput, "status">;
+
+export type TaskOrigin = {
+  from?: string | null;
+  personId?: string | null;
+  groupId?: string | null;
+  view?: string | null;
+  q?: string | null;
+  page?: string | null;
+};
+
+export function parseTaskStatus(value: string | null | undefined): TaskStatus {
+  if (value === "completed" || value === "cancelled") return value;
+  return "pending";
+}
+
+export function includesFold(haystack: string, query: string): boolean {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return true;
+  return haystack.toLowerCase().includes(needle);
+}
+
+export function isTaskOverdue(task: Pick<Task, "status" | "dueDate">, today: string): boolean {
+  return task.status === "pending" && task.dueDate != null && task.dueDate < today;
+}
+
+export function comparePendingTasks(
+  a: Pick<Task, "dueDate" | "createdAt">,
+  b: Pick<Task, "dueDate" | "createdAt">,
+): number {
+  if (a.dueDate && b.dueDate) {
+    const byDate = a.dueDate.localeCompare(b.dueDate);
+    if (byDate !== 0) return byDate;
+    return a.createdAt.localeCompare(b.createdAt);
+  }
+  if (a.dueDate) return -1;
+  if (b.dueDate) return 1;
+  return a.createdAt.localeCompare(b.createdAt);
+}
+
+export function compareClosedTasks(
+  a: Pick<Task, "statusChangedAt" | "createdAt">,
+  b: Pick<Task, "statusChangedAt" | "createdAt">,
+): number {
+  const byStatus = b.statusChangedAt.localeCompare(a.statusChangedAt);
+  if (byStatus !== 0) return byStatus;
+  return b.createdAt.localeCompare(a.createdAt);
+}
+
+export function tasksForView(tasks: Task[], view: TaskStatus, query = ""): Task[] {
+  const filtered = tasks.filter((task) => task.status === view && includesFold(task.name, query));
+  filtered.sort(view === "pending" ? comparePendingTasks : compareClosedTasks);
+  return filtered;
+}
+
+export function formatCreatedAt(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export function taskSubjectPath(subject: TaskSubject): string | null {
+  if (subject.kind === "person") return `/people/${subject.id}`;
+  if (subject.kind === "group") return `/groups/${subject.id}`;
+  return null;
+}
+
+export function taskSubjectLabel(subject: TaskSubject): string | null {
+  if (subject.kind === "loose") return null;
+  if (subject.name) return subject.name;
+  return subject.kind === "person" ? "Person" : "Group";
+}
+
+export function taskListPath(origin: TaskOrigin): string {
+  if (origin.from === "person" && origin.personId) return `/people/${origin.personId}`;
+  if (origin.from === "group" && origin.groupId) return `/groups/${origin.groupId}`;
+  const params = new URLSearchParams();
+  if (origin.view === "completed" || origin.view === "cancelled") params.set("view", origin.view);
+  if (origin.q?.trim()) params.set("q", origin.q.trim());
+  const page = Number(origin.page ?? "1");
+  if (Number.isFinite(page) && page > 1) params.set("page", String(Math.floor(page)));
+  const qs = params.toString();
+  return qs ? `/tasks?${qs}` : "/tasks";
+}
+
+export function taskFormPath(taskId: string | null, origin: TaskOrigin): string {
+  const params = new URLSearchParams();
+  if (origin.from) params.set("from", origin.from);
+  if (origin.personId) params.set("personId", origin.personId);
+  if (origin.groupId) params.set("groupId", origin.groupId);
+  if (origin.view === "completed" || origin.view === "cancelled") params.set("view", origin.view);
+  if (origin.q?.trim()) params.set("q", origin.q.trim());
+  const page = Number(origin.page ?? "1");
+  if (Number.isFinite(page) && page > 1) params.set("page", String(Math.floor(page)));
+  const qs = params.toString();
+  const base = taskId ? `/tasks/${taskId}` : "/tasks/new";
+  return qs ? `${base}?${qs}` : base;
+}
+
+export {
+  ACTIVITY_PRESET_DAYS,
+  activityBucketStart,
+  activityGrain,
+  activitySpans,
+  addDaysYmd,
+  inclusiveDayCount,
+  parseActivityDay,
+  rollingRange,
+} from "./activity.ts";
+export type {
+  ActivityBlock,
+  ActivityBucket,
+  ActivityGrain,
+  ActivityResponse,
+  ActivityRow,
+  ActivitySpan,
+  ActivityTaskBlock,
+} from "./activity.ts";
+
 export const TIMEZONES = [
   "America/Argentina/Buenos_Aires",
   "America/Sao_Paulo",

@@ -40,6 +40,10 @@ _Avoid_: Archive, mute, delete, unsubscribe
 The current thread to pick up next time you reach a Person. It lives on the Person, not on a past Interaction.
 _Avoid_: Follow-up, next action, agenda
 
+**Task**:
+Something you mean to do. It has a name, an optional description, a status of pending, completed, or cancelled, a creation date, and an optional due date. It is loose, about one Person, or about one Group.
+_Avoid_: Reminder, to-do, follow-up, queue item
+
 **Dates**:
 The upcoming timeline of Occasions and birthdays — a reason to reach someone because a day is coming, not because their cadence is due.
 _Avoid_: Calendar, agenda, events

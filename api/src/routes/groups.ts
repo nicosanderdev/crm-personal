@@ -15,6 +15,7 @@ import { refreshLastContact } from "../last-contact.ts";
 import { GroupLogModel, type GroupLogDoc } from "../models/group-log.ts";
 import { GroupModel, type GroupDoc } from "../models/group.ts";
 import { PersonModel } from "../models/person.ts";
+import { TaskModel } from "../models/task.ts";
 import { iso, parseDay } from "../serialize.ts";
 
 export const groupsRouter = Router();
@@ -91,6 +92,7 @@ groupsRouter.delete("/:id", async (req, res, next) => {
   try {
     const doc = await findGroup(req.params.id);
     await GroupLogModel.updateMany({ groupId: doc._id }, { $set: { groupId: null } });
+    await TaskModel.deleteMany({ groupId: doc._id });
     await doc.deleteOne();
     res.status(204).end();
   } catch (err) {
