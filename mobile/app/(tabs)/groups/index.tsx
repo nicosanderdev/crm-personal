@@ -29,17 +29,17 @@ export default function GroupsScreen() {
           title: "Groups",
           headerRight: () => (
             <Link href="/groups/new" asChild>
-              <Pressable className="pl-3">
+              <Pressable className="px-2 py-2">
                 <Text className="font-sans-medium text-accent">Add</Text>
               </Pressable>
             </Link>
           ),
         }}
       />
-      {error ? <Text className="mx-5 mt-3 text-rose">{error}</Text> : null}
+      {error ? <Text className="mx-6 mt-3 text-rose">{error}</Text> : null}
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-5 pb-10 pt-3"
+        contentContainerClassName="px-6 pb-10 pt-3"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

@@ -221,7 +221,7 @@ export default function GroupDetailScreen() {
 
   if (error && !group) {
     return (
-      <View className="flex-1 bg-paper px-5 pt-6">
+      <View className="flex-1 bg-paper px-6 pt-6">
         <Text className="text-rose">{error}</Text>
       </View>
     );
@@ -229,7 +229,7 @@ export default function GroupDetailScreen() {
 
   if (!group) {
     return (
-      <View className="flex-1 bg-paper px-5 pt-6">
+      <View className="flex-1 bg-paper px-6 pt-6">
         <Text className="text-ink-soft">Loading…</Text>
       </View>
     );
@@ -251,7 +251,7 @@ export default function GroupDetailScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <Stack.Screen options={{ title: group.name }} />
-      <ScrollView className="flex-1" contentContainerClassName="px-5 py-4 pb-16">
+      <ScrollView className="flex-1" contentContainerClassName="px-6 py-4 pb-16">
         <Text className="text-sm text-ink">Name</Text>
         <TextInput
           className="mt-1 rounded-lg border border-line bg-card px-3 py-3 text-ink"

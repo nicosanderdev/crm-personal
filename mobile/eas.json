@@ -2,6 +2,9 @@
   "build": {
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://crm-personal-a0x5.onrender.com"
+      },
       "android": {
         "buildType": "apk"
       }

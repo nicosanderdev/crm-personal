@@ -9,6 +9,7 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 import type { Me } from "@crm/shared";
 import { TOKEN_KEY, api, configureApi } from "./api";
 
@@ -21,15 +22,29 @@ type AuthValue = {
 
 const AuthContext = createContext<AuthValue | null>(null);
 
+function browserStorage(): Storage | null {
+  if (typeof localStorage === "undefined") return null;
+  return localStorage;
+}
+
 async function readToken(): Promise<string | null> {
+  if (Platform.OS === "web") return browserStorage()?.getItem(TOKEN_KEY) ?? null;
   return SecureStore.getItemAsync(TOKEN_KEY);
 }
 
 async function writeToken(token: string): Promise<void> {
+  if (Platform.OS === "web") {
+    browserStorage()?.setItem(TOKEN_KEY, token);
+    return;
+  }
   await SecureStore.setItemAsync(TOKEN_KEY, token);
 }
 
 async function clearToken(): Promise<void> {
+  if (Platform.OS === "web") {
+    browserStorage()?.removeItem(TOKEN_KEY);
+    return;
+  }
   await SecureStore.deleteItemAsync(TOKEN_KEY);
 }
 

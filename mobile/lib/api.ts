@@ -10,7 +10,7 @@ export class ApiError extends Error {
 const TOKEN_KEY = "crm.token";
 
 export const API_BASE = (
-  process.env.EXPO_PUBLIC_API_URL ?? "https://crm-personal-api.onrender.com"
+  process.env.EXPO_PUBLIC_API_URL ?? "https://crm-personal-a0x5.onrender.com"
 ).replace(/\/$/, "");
 
 type TokenStore = {

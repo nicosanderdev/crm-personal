@@ -56,7 +56,7 @@ export default function NewPersonScreen() {
       className="flex-1 bg-paper"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView className="flex-1" contentContainerClassName="px-5 py-4 pb-12">
+      <ScrollView className="flex-1" contentContainerClassName="px-6 py-4 pb-12">
         <Field label="Name">
           <TextInput
             className="rounded-lg border border-line bg-card px-3 py-3 text-ink"

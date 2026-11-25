@@ -182,7 +182,7 @@ export function TaskForm({ taskId }: { taskId?: string }) {
 
   if (!ready && !error) {
     return (
-      <View className="flex-1 bg-paper px-5 pt-6">
+      <View className="flex-1 bg-paper px-6 pt-6">
         <Text className="text-ink-soft">Loading…</Text>
       </View>
     );
@@ -193,7 +193,7 @@ export function TaskForm({ taskId }: { taskId?: string }) {
       className="flex-1 bg-paper"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView className="flex-1" contentContainerClassName="px-5 py-4 pb-12">
+      <ScrollView className="flex-1" contentContainerClassName="px-6 py-4 pb-12">
         {createdAt ? (
           <Text className="text-sm text-ink-soft">Created {formatCreatedAt(createdAt)}</Text>
         ) : null}

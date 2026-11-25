@@ -42,13 +42,13 @@ export default function PeopleScreen() {
         options={{
           title: "People",
           headerLeft: () => (
-            <Pressable className="pr-3" onPress={() => void logout()}>
+            <Pressable className="px-2 py-2" onPress={() => void logout()}>
               <Text className="text-sm text-ink-soft">Log out</Text>
             </Pressable>
           ),
           headerRight: () => (
             <Link href="/people/new" asChild>
-              <Pressable className="pl-3">
+              <Pressable className="px-2 py-2">
                 <Text className="font-sans-medium text-accent">Add</Text>
               </Pressable>
             </Link>
@@ -56,7 +56,7 @@ export default function PeopleScreen() {
         }}
       />
       <TextInput
-        className="mx-5 mt-3 rounded-lg border border-line bg-card px-3 py-3 text-ink"
+        className="mx-6 mt-3 rounded-lg border border-line bg-card px-3 py-3 text-ink"
         placeholder="Search name, organization, tags…"
         placeholderTextColor="#5c534a"
         value={q}
@@ -64,17 +64,17 @@ export default function PeopleScreen() {
       />
       {tag ? (
         <Pressable
-          className="mx-5 mt-3 self-start rounded-full bg-ink px-3 py-1"
+          className="mx-6 mt-3 self-start rounded-full bg-ink px-3 py-1"
           onPress={() => router.replace("/people")}
         >
           <Text className="text-sm text-paper">{tag} ×</Text>
         </Pressable>
       ) : null}
-      {me ? <Text className="mx-5 mt-2 text-xs text-ink-soft">{me.email}</Text> : null}
-      {error ? <Text className="mx-5 mt-3 text-rose">{error}</Text> : null}
+      {me ? <Text className="mx-6 mt-2 text-xs text-ink-soft">{me.email}</Text> : null}
+      {error ? <Text className="mx-6 mt-3 text-rose">{error}</Text> : null}
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-5 pb-10 pt-3"
+        contentContainerClassName="px-6 pb-10 pt-3"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

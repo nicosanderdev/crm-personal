@@ -57,7 +57,7 @@ export default function NewGroupScreen() {
       className="flex-1 bg-paper"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView className="flex-1" contentContainerClassName="px-5 py-4 pb-12">
+      <ScrollView className="flex-1" contentContainerClassName="px-6 py-4 pb-12">
         <Text className="text-sm text-ink-soft">A name is enough. Add people now or later.</Text>
         <Text className="mt-4 text-sm text-ink">Name</Text>
         <TextInput

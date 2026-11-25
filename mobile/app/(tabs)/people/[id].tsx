@@ -80,7 +80,7 @@ export default function PersonDetailScreen() {
 
   if (error && !person) {
     return (
-      <View className="flex-1 bg-paper px-5 pt-6">
+      <View className="flex-1 bg-paper px-6 pt-6">
         <Text className="text-rose">{error}</Text>
       </View>
     );
@@ -88,7 +88,7 @@ export default function PersonDetailScreen() {
 
   if (!person) {
     return (
-      <View className="flex-1 bg-paper px-5 pt-6">
+      <View className="flex-1 bg-paper px-6 pt-6">
         <Text className="text-ink-soft">Loading…</Text>
       </View>
     );
@@ -100,7 +100,7 @@ export default function PersonDetailScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <Stack.Screen options={{ title: person.name }} />
-      <ScrollView className="flex-1" contentContainerClassName="px-5 py-4 pb-12">
+      <ScrollView className="flex-1" contentContainerClassName="px-6 py-4 pb-12">
         <View className="flex-row items-center gap-4">
           <Avatar name={person.name} photoUrl={person.photoUrl} size="md" />
           <View className="flex-1">

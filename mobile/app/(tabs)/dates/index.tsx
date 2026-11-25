@@ -30,7 +30,7 @@ export default function DatesScreen() {
           title: "Dates",
           headerRight: () => (
             <Link href="./new" asChild>
-              <Pressable className="pl-3">
+              <Pressable className="px-2 py-2">
                 <Text className="font-sans-medium text-accent">Add</Text>
               </Pressable>
             </Link>
@@ -38,7 +38,7 @@ export default function DatesScreen() {
         }}
       />
       {error && !data ? (
-        <View className="px-5 pt-6">
+        <View className="px-6 pt-6">
           <Text className="text-rose">{error}</Text>
           <Pressable className="mt-4 self-start rounded-lg bg-ink px-4 py-2" onPress={() => void load()}>
             <Text className="text-paper">Retry</Text>
@@ -47,7 +47,7 @@ export default function DatesScreen() {
       ) : (
         <ScrollView
           className="flex-1"
-          contentContainerClassName="px-5 pb-10 pt-2"
+          contentContainerClassName="px-6 pb-10 pt-2"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

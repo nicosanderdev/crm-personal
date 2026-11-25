@@ -176,7 +176,7 @@ export function TaskHome({ variant, personId, groupId }: TaskHomeProps) {
           title: "Tasks",
           headerRight: () => (
             <Link href={"/tasks/new" as Href} asChild>
-              <Pressable className="pl-3">
+              <Pressable className="px-2 py-2">
                 <Text className="font-sans-medium text-accent">Add</Text>
               </Pressable>
             </Link>
@@ -185,7 +185,7 @@ export function TaskHome({ variant, personId, groupId }: TaskHomeProps) {
       />
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-5 pb-12 pt-4"
+        contentContainerClassName="px-6 pb-12 pt-4"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

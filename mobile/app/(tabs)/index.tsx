@@ -51,7 +51,7 @@ export default function QueueScreen() {
 
   if (error && !data) {
     return (
-      <View className="flex-1 bg-paper px-5 pt-6">
+      <View className="flex-1 bg-paper px-6 pt-6">
         <Text className="text-rose">{error}</Text>
         <Pressable className="mt-4 self-start rounded-lg bg-ink px-4 py-2" onPress={() => void load()}>
           <Text className="text-paper">Retry</Text>
@@ -63,7 +63,7 @@ export default function QueueScreen() {
   return (
     <ScrollView
       className="flex-1 bg-paper"
-      contentContainerClassName="px-5 pb-10 pt-2"
+      contentContainerClassName="px-6 pb-10 pt-2"
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void onRefresh()} />}
     >
       <Stack.Screen options={{ title: "Queue" }} />
