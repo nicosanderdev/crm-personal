@@ -466,6 +466,26 @@ export function taskFormPath(taskId: string | null, origin: TaskOrigin): string 
   return qs ? `${base}?${qs}` : base;
 }
 
+export {
+  ACTIVITY_PRESET_DAYS,
+  activityBucketStart,
+  activityGrain,
+  activitySpans,
+  addDaysYmd,
+  inclusiveDayCount,
+  parseActivityDay,
+  rollingRange,
+} from "./activity.ts";
+export type {
+  ActivityBlock,
+  ActivityBucket,
+  ActivityGrain,
+  ActivityResponse,
+  ActivityRow,
+  ActivitySpan,
+  ActivityTaskBlock,
+} from "./activity.ts";
+
 export const TIMEZONES = [
   "America/Argentina/Buenos_Aires",
   "America/Sao_Paulo",

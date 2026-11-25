@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, RequireAuth } from "./auth.tsx";
 import { Layout } from "./components/Layout.tsx";
+import { ActivityPage } from "./pages/ActivityPage.tsx";
 import { DatesPage } from "./pages/DatesPage.tsx";
 import { GroupDetailPage } from "./pages/GroupDetailPage.tsx";
 import { GroupNewPage } from "./pages/GroupNewPage.tsx";
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/" element={<QueuePage />} />
             <Route path="/dates" element={<DatesPage />} />
             <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/activity" element={<ActivityPage />} />
             <Route path="/tasks/new" element={<TaskFormPage />} />
             <Route path="/tasks/:id" element={<TaskFormPage />} />
             <Route path="/people" element={<PeoplePage />} />
