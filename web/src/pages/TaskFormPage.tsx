@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import {
   TASK_STATUSES,
   TASK_STATUS_LABELS,
+  TASK_TEMPLATES,
   formatCreatedAt,
   includesFold,
   isTaskOverdue,
@@ -15,6 +16,7 @@ import {
   type TaskInput,
   type TaskStatus,
   type TaskSubjectRef,
+  type TaskTemplate,
 } from "@crm/shared";
 import { api } from "../api.ts";
 import { LoadingSpinner } from "../components/LoadingSpinner.tsx";
@@ -159,6 +161,19 @@ export function TaskFormPage() {
   const groupRows = groups.filter((group) => includesFold(group.name, groupQuery));
   const overdue = isTaskOverdue({ status, dueDate: dueDate || null }, todayYmd());
   const backLabel = origin.from === "person" ? "Person" : origin.from === "group" ? "Group" : "Tasks";
+  const selectedTemplateId =
+    TASK_TEMPLATES.find((template) => template.name === name && template.description === description)?.id ??
+    null;
+
+  function applyTemplate(template: TaskTemplate) {
+    if (template.id === selectedTemplateId) {
+      setName("");
+      setDescription("");
+      return;
+    }
+    setName(template.name);
+    setDescription(template.description);
+  }
 
   if (!ready && !error) return <LoadingSpinner />;
 
@@ -173,6 +188,27 @@ export function TaskFormPage() {
       ) : null}
 
       <form onSubmit={(event) => void save(event)} className="mt-6 space-y-4">
+        {editing ? null : (
+          <fieldset>
+            <legend className="text-sm">Templates</legend>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {TASK_TEMPLATES.map((template) => (
+                <button
+                  key={template.id}
+                  type="button"
+                  className={
+                    template.id === selectedTemplateId
+                      ? "rounded-full bg-ink px-3 py-1 text-sm text-paper"
+                      : "rounded-full border border-line px-3 py-1 text-sm"
+                  }
+                  onClick={() => applyTemplate(template)}
+                >
+                  {template.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+        )}
         <label className="block text-sm">
           Name
           <input

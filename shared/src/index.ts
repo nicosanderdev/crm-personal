@@ -486,6 +486,9 @@ export type {
   ActivityTaskBlock,
 } from "./activity.ts";
 
+export { TASK_TEMPLATES } from "./task-templates.ts";
+export type { TaskTemplate } from "./task-templates.ts";
+
 export const TIMEZONES = [
   "America/Argentina/Buenos_Aires",
   "America/Sao_Paulo",

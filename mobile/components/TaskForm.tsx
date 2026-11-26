@@ -13,6 +13,7 @@ import {
 import {
   TASK_STATUSES,
   TASK_STATUS_LABELS,
+  TASK_TEMPLATES,
   YMD,
   formatCreatedAt,
   includesFold,
@@ -27,6 +28,7 @@ import {
   type TaskOrigin,
   type TaskStatus,
   type TaskSubjectRef,
+  type TaskTemplate,
 } from "@crm/shared";
 import { api } from "../lib/api";
 
@@ -179,6 +181,19 @@ export function TaskForm({ taskId }: { taskId?: string }) {
   const personRows = personMatches.slice(0, 40);
   const groupRows = groupMatches.slice(0, 40);
   const overdue = isTaskOverdue({ status, dueDate: dueDate || null }, todayYmd());
+  const selectedTemplateId =
+    TASK_TEMPLATES.find((template) => template.name === name && template.description === description)?.id ??
+    null;
+
+  function applyTemplate(template: TaskTemplate) {
+    if (template.id === selectedTemplateId) {
+      setName("");
+      setDescription("");
+      return;
+    }
+    setName(template.name);
+    setDescription(template.description);
+  }
 
   if (!ready && !error) {
     return (
@@ -197,6 +212,28 @@ export function TaskForm({ taskId }: { taskId?: string }) {
         {createdAt ? (
           <Text className="text-sm text-ink-soft">Created {formatCreatedAt(createdAt)}</Text>
         ) : null}
+        {editing ? null : (
+          <View>
+            <Text className="text-sm text-ink">Templates</Text>
+            <View className="mt-2 flex-row flex-wrap gap-2">
+              {TASK_TEMPLATES.map((template) => (
+                <Pressable
+                  key={template.id}
+                  className={
+                    template.id === selectedTemplateId
+                      ? "rounded-full bg-ink px-3 py-1"
+                      : "rounded-full border border-line px-3 py-1"
+                  }
+                  onPress={() => applyTemplate(template)}
+                >
+                  <Text className={template.id === selectedTemplateId ? "text-sm text-paper" : "text-sm text-ink"}>
+                    {template.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
         <Field label="Name">
           <TextInput
             className="mt-1 rounded-lg border border-line bg-card px-3 py-3 text-ink"
