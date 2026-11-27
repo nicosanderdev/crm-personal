@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth.tsx";
+import { SessionNotes } from "./SessionNotes.tsx";
 
 const links = [
   { to: "/", label: "Queue", end: true },
@@ -22,7 +23,7 @@ export function Layout() {
           <p className="font-serif text-2xl tracking-tight">Circle</p>
           <p className="mt-1 hidden text-xs text-paper-2 lg:block">Keep in touch</p>
         </div>
-        <nav className="flex gap-4 text-sm lg:mt-10 lg:flex-col lg:gap-1">
+        <nav className="flex min-w-0 flex-1 gap-4 overflow-x-auto text-sm lg:mt-10 lg:flex-none lg:flex-col lg:gap-1 lg:overflow-visible">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -36,18 +37,21 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
-        <div className="hidden lg:mt-auto lg:block">
-          <p className="truncate text-xs text-paper-2">{me?.email}</p>
-          <button
-            type="button"
-            className="mt-2 text-sm text-paper-2 underline-offset-2 hover:text-white hover:underline"
-            onClick={async () => {
-              await logout();
-              navigate("/login");
-            }}
-          >
-            Log out
-          </button>
+        <div className="shrink-0 lg:mt-auto">
+          <SessionNotes />
+          <div className="mt-6 hidden lg:block">
+            <p className="truncate text-xs text-paper-2">{me?.email}</p>
+            <button
+              type="button"
+              className="mt-2 text-sm text-paper-2 underline-offset-2 hover:text-white hover:underline"
+              onClick={async () => {
+                await logout();
+                navigate("/login");
+              }}
+            >
+              Log out
+            </button>
+          </div>
         </div>
       </aside>
       <main className="min-w-0 px-6 py-8 lg:px-10">
